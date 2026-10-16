@@ -1,4 +1,12 @@
-// Firebase PUBLIC client configuration (not a secret). Leave apiKey/projectId empty to run in LOCAL-ONLY mode.
-// Fill these from Firebase console -> Project settings -> Your apps -> Web app. See README.md (Bengali) for steps.
-// Security does NOT come from hiding these values; it comes from Authentication + firebase/firestore.rules.
-window.TT_FIREBASE_CONFIG={apiKey:'',projectId:''};
+
+/* TaskTime Firebase Configuration */
+window.TT_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyANlALQrIzJGdPbpUjgpsCOBC3FgxRfFaE",
+  authDomain: "tasktime-73fc7.firebaseapp.com",
+  databaseURL: "https://tasktime-73fc7-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "tasktime-73fc7",
+  storageBucket: "tasktime-73fc7.firebasestorage.app",
+  messagingSenderId: "437807997377",
+  appId: "1:437807997377:web:4ae78453755e6cfccd0f40"
+};
+
