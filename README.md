@@ -33,7 +33,10 @@ Phase 1 (HTML/CSS/Vanilla JS + IndexedDB) অপরিবর্তিত থে�
    window.TT_FIREBASE_CONFIG={apiKey:'AIza...',projectId:'my-project-id'};
    ```
    (নমুনা: `firebase/firebase-config.sample.js`)
+   Firebase কনসোলের পুরো Web-app কনফিগ (`authDomain`, `appId` ইত্যাদি সহ) বসালেও চলবে; অ্যাপ শুধু `apiKey` ও `projectId` ব্যবহার করে। **দুটোই ফাঁকা** = শুধু-লোকাল মোড। ফাঁকা, placeholder, ভুল ফরম্যাট বা ভিন্ন প্রজেক্টের মিশ্রণ (যেমন `authDomain` অন্য প্রজেক্টের) হলে অ্যাপ নিজে থেকে **লোকাল মোডে** থাকে — কোনো নেটওয়ার্ক কল বা আপলোড হয় না।
 7. কমিট ও পুশ করুন।
+
+> **Realtime Database ব্যবহার হয় না।** কনসোলে তৈরি করে থাকলে `firebase/database.rules.json` (সব বন্ধ: `.read/.write = false`) প্রকাশ করুন বা `cd firebase && firebase deploy --only database`; "test mode" রুল খোলা থাকে।
 
 > **এই কনফিগ গোপন কিছু নয়।** Web API key পাবলিক ক্লায়েন্ট আইডেন্টিফায়ার। নিরাপত্তা আসে **Authentication + Security Rules** থেকে। কখনো Admin SDK key / service-account JSON অ্যাপে বা রিপোতে রাখবেন না (`.gitignore` ও একটি টেস্ট এটা ঠেকায়)।
 > ঐচ্ছিক: Google Cloud Console → Credentials → API key → *API restrictions* দিয়ে শুধু Identity Toolkit, Token Service ও Cloud Firestore API রাখুন। (Android-package restriction কাজ করবে না, কারণ কল WebView থেকে যায়।)
@@ -106,7 +109,7 @@ Phase 1 (HTML/CSS/Vanilla JS + IndexedDB) অপরিবর্তিত থে�
 
 ## ৯. টেস্ট
 ```bash
-node --test tests/*.test.js        # Node 18+; ৫৬টি (Phase 1-এর ৮টি সহ)
+node --test tests/*.test.js        # Node 18+; ৫৯টি (Phase 1-এর ৮টি সহ)
 ```
 | ফাইল | কী যাচাই করে |
 |---|---|
@@ -114,7 +117,7 @@ node --test tests/*.test.js        # Node 18+; ৫৬টি (Phase 1-এর ৮�
 | `tests/sync.test.js` | queue, retry/backoff, ডুপ্লিকেট রোধ, কনফ্লিক্ট, tombstone, অ্যাকাউন্ট বদল, আপলোড-অনুমোদন, লোকাল ডাটা সুরক্ষা |
 | `tests/cloud.test.js` | কনফিগ fallback, Auth অবস্থা/ত্রুটি, সেশন পুনরুদ্ধার, Firestore REST কোডেক/অনুরোধ/ত্রুটি-শ্রেণি |
 | `tests/timer-recovery.test.js` | প্রসেস-কিলের পর টাইমার পুনরুদ্ধার |
-| `tests/android-config.test.js` | Gradle/Manifest/Workflow পথ ও নিরাপত্তা (স্ট্যাটিক) |
+| `tests/android-config.test.js` | Gradle/Manifest/Workflow পথ ও নিরাপত্তা (স্ট্যাটিক); আসল secret (private key, service-account, OAuth secret) সর্বত্র নিষিদ্ধ, Web API key শুধু `js/firebase-config.js`-এ; কনফিগ ফাঁকা (লোকাল) বা সামঞ্জস্যপূর্ণ (ক্লাউড); Rules ↔ অ্যাপের ফিল্ড মিল |
 | `android/app/src/test/...` | Kotlin ইউনিট টেস্ট (URL নীতি, saveFile যাচাই) — CI-তে চলে |
 | `firebase/tests/firestore.rules.test.js` | Rules টেস্ট — emulator লাগে (ফাইলের ভেতরে কমান্ড) |
 | `tests/e2e/*.py` | ঐচ্ছিক আসল-ব্রাউজার টেস্ট (`tests/e2e/README.txt`) |
@@ -124,4 +127,4 @@ node --test tests/*.test.js        # Node 18+; ৫৬টি (Phase 1-এর ৮�
 * APK আসলে বিল্ড হয়নি, ফোনে চালানো হয়নি; কোনো APK লিংক নেই।
 * Kotlin ইউনিট টেস্ট ও `firestore.rules` (emulator) টেস্ট চালানো হয়নি।
 * **আসল Firebase**-এর সাথে পরীক্ষা হয়নি। `tests/e2e`-এর ক্লাউড টেস্ট আমারই লেখা REST-অনুকরণ; Firestore-এর কিছু ত্রুটি-কোড (যেমন precondition ব্যর্থতার status) আসল সার্ভারে ভিন্ন হতে পারে। প্রথম আসল পরীক্ষায় সাইন-ইন, আপলোড ও দুই-ডিভাইস কনফ্লিক্ট নিজে একবার দেখে নিন।
-* **চালানো হয়েছে:** Node টেস্ট ৫৬/৫৬ পাস; আসল Chromium-এ Phase 1 `v1→v2` মাইগ্রেশন, লোকাল মোড, সাইন-ইন গেট, আপলোড-অনুমোদন, অফলাইন সম্পাদনা, পুল, সেশন পুনরুদ্ধার, লগআউট/অ্যাকাউন্ট বদল, এবং Android-এর CSP হেডারের নিচে পুরো অ্যাপ।
+* **চালানো হয়েছে:** Node টেস্ট ৫৯/৫৯ পাস; আসল Chromium-এ Phase 1 `v1→v2` মাইগ্রেশন, লোকাল মোড, সাইন-ইন গেট, আপলোড-অনুমোদন, অফলাইন সম্পাদনা, পুল, সেশন পুনরুদ্ধার, লগআউট/অ্যাকাউন্ট বদল, এবং Android-এর CSP হেডারের নিচে পুরো অ্যাপ।

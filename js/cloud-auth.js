@@ -4,7 +4,14 @@
 (function(g){
 const ITK='https://identitytoolkit.googleapis.com/v1/accounts',TOKEN='https://securetoken.googleapis.com/v1/token',KEY='tt.auth.v1';
 const PLACEHOLDER=/^(your[_-]|replace|<|todo|xxx)/i;
-function isConfigured(c){return !!c&&typeof c.apiKey==='string'&&typeof c.projectId==='string'&&c.apiKey.trim()!==''&&c.projectId.trim()!==''&&!PLACEHOLDER.test(c.apiKey.trim())&&!PLACEHOLDER.test(c.projectId.trim())}
+const KEY_RE=/^[A-Za-z0-9_-]+$/,PID_RE=/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/; // Firebase project ids: 6-30 chars, lowercase letters/digits/hyphens
+// Cloud is enabled ONLY for a well-formed Web config. Anything missing, placeholder, malformed or self-contradictory => local-only (no network, no upload).
+function isConfigured(c){if(!c||typeof c!=='object'||typeof c.apiKey!=='string'||typeof c.projectId!=='string')return false;
+ const k=c.apiKey.trim(),p=c.projectId.trim();
+ if(!k||!p||PLACEHOLDER.test(k)||PLACEHOLDER.test(p)||!KEY_RE.test(k)||!PID_RE.test(p))return false;
+ if(c.authDomain!==undefined&&c.authDomain!==''){if(typeof c.authDomain!=='string')return false;const d=c.authDomain.trim().toLowerCase(); // a default Firebase domain must belong to the same project (catches mixed-up copy/paste)
+  if(/\.(firebaseapp\.com|web\.app)$/.test(d)&&d.split('.')[0]!==p)return false}
+ return true}
 class AuthError extends Error{constructor(code,o={}){super(code);this.code=code;this.network=!!o.network;this.status=o.status||0;this.kind=o.network||o.status>=500?'network':'auth'}}
 const codeFrom=b=>{const m=b&&b.error&&b.error.message;return typeof m==='string'?m.split(' : ')[0].trim():'UNKNOWN'};
 const FATAL=new Set(['TOKEN_EXPIRED','USER_DISABLED','USER_NOT_FOUND','INVALID_REFRESH_TOKEN','MISSING_REFRESH_TOKEN','INVALID_GRANT_TYPE','CREDENTIAL_TOO_OLD_LOGIN_AGAIN','UNKNOWN']);
