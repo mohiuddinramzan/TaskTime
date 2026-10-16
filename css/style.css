@@ -1,21 +1,77 @@
-:root{--a:#6d5dfc;--r:16px;--bg:#f6f5fa;--c:#fff;--t:#1b1b24;--m:#6b6b7b;--b:#e4e2ee}
-:root[data-theme=dark]{--bg:#1c1c22;--c:#26262e;--t:#f1f0f7;--m:#a3a2b3;--b:#34343f}
-@media(prefers-color-scheme:dark){:root[data-theme=system]{--bg:#1c1c22;--c:#26262e;--t:#f1f0f7;--m:#a3a2b3;--b:#34343f}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:16px/1.5 system-ui,sans-serif;padding:56px 0 76px}
-header{position:fixed;top:0;left:0;right:0;height:52px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;background:var(--bg);z-index:5}
-h1{font-size:20px;margin:0}main{padding:8px 16px;max-width:640px;margin:auto}
-.card{background:var(--c);border:1px solid var(--b);border-radius:var(--r);padding:14px;margin:10px 0;animation:in .2s}
-@keyframes in{from{opacity:0;transform:translateY(6px)}}
-.pill{font-size:12px;padding:2px 10px;border-radius:99px;background:var(--c);border:1px solid var(--b)}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--c);border-top:1px solid var(--b);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;background:none;border:0;color:var(--m);padding:12px 2px;font-size:12px}nav button.on{color:var(--a);font-weight:700}
-#fab{position:fixed;right:18px;bottom:84px;width:56px;height:56px;border-radius:50%;border:0;background:var(--a);color:#fff;font-size:28px;box-shadow:0 4px 14px #0004;z-index:6}
+/* Task Time — design tokens. Dark is the primary look (violet-ink); light is a calm counterpart. */
+:root{--a:#7c3aed;--a2:#a78bfa;--r:20px;--bg:#f3f2f9;--c:#fff;--c2:#f0eff7;--t:#17161f;--m:#6e6c82;--b:#e3e1ee;
+ --lime:#b6e35a;--cyan:#16b8d9;--lav:#a98bf0;--amber:#e69500;--red:#e0475a;--green:#14a672;--on-pastel:#14131c}
+:root[data-theme=dark]{--a:#8b5cf6;--bg:#0d0c14;--c:#17161f;--c2:#201f2c;--t:#f3f2fa;--m:#8f8da6;--b:#2a2937;--lime:#c8f27d;--cyan:#3fd2ee;--lav:#cdb8f6;--amber:#f5a524;--red:#ef5b6b;--green:#34d399}
+@media(prefers-color-scheme:dark){:root[data-theme=system]{--a:#8b5cf6;--bg:#0d0c14;--c:#17161f;--c2:#201f2c;--t:#f3f2fa;--m:#8f8da6;--b:#2a2937;--lime:#c8f27d;--cyan:#3fd2ee;--lav:#cdb8f6;--amber:#f5a524;--red:#ef5b6b;--green:#34d399}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--t);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Bengali",sans-serif;padding:60px 0 92px}
+header{position:fixed;top:0;left:0;right:0;height:54px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);z-index:5}
+h1{font-size:18px;margin:0;font-weight:700;letter-spacing:-.01em}h2{margin:2px 0 6px;font-size:22px;letter-spacing:-.02em}h3{margin:20px 2px 4px;font-size:15px;color:var(--m);font-weight:600}
+main{padding:6px 16px;max-width:640px;margin:auto}
+.pills{display:flex;gap:6px;align-items:center}
+.pill{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--c2);border:1px solid var(--b);color:var(--m);white-space:nowrap}
+.card{background:var(--c);border:1px solid var(--b);border-radius:var(--r);padding:16px;margin:10px 0}
+.hero{background:linear-gradient(145deg,color-mix(in srgb,var(--a) 22%,var(--c)),var(--c) 70%)}
 button,select,input,textarea{font:inherit;color:var(--t)}
-.btn{background:var(--a);color:#fff;border:0;border-radius:12px;padding:8px 14px;margin:2px}.btn.g{background:var(--c);color:var(--t);border:1px solid var(--b)}.btn.d{background:#d64550}
-input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--b);border-radius:10px;padding:8px;margin:4px 0}
-.bar{height:10px;background:var(--b);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--a)}
-.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.big{font-size:40px;font-weight:700;font-variant-numeric:tabular-nums}
-.m{color:var(--m);font-size:13px}.err{color:#d64550;font-size:13px}.done{text-decoration:line-through;opacity:.6}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}.cal button{border:1px solid var(--b);background:var(--c);border-radius:10px;padding:8px 0}.cal .sel{background:var(--a);color:#fff}
-dialog{border:1px solid var(--b);border-radius:var(--r);background:var(--c);color:var(--t);width:min(92vw,420px)}svg{width:100%;height:auto}
-.pills{display:flex;gap:6px;align-items:center}input:disabled,button:disabled{opacity:.5}
+button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--a2);outline-offset:2px}
+/* buttons */
+.btn{background:var(--a);color:#fff;border:0;border-radius:99px;padding:9px 18px;margin:3px 2px;font-weight:600}
+.btn.g{background:var(--c2);color:var(--t);border:1px solid var(--b)}.btn.d{background:var(--red);color:#fff}.btn.w{background:var(--t);color:var(--bg)}
+.btn:active{transform:scale(.97)}
+.ib{width:36px;height:36px;border-radius:12px;border:1px solid var(--b);background:var(--c2);display:inline-grid;place-items:center;margin:2px 3px 0 0;color:var(--t)}
+.ib.d{color:var(--red)}.ib svg{width:18px;height:18px}
+input,select,textarea{width:100%;background:var(--c2);border:1px solid var(--b);border-radius:14px;padding:10px 12px;margin:4px 0}
+input[type=checkbox]{width:auto}label{font-size:13px;color:var(--m)}
+/* segmented control (period / filters) */
+.seg{display:flex;background:var(--c);border:1px solid var(--b);border-radius:14px;padding:4px;gap:4px;margin:8px 0}
+.seg button{flex:1;border:0;background:none;color:var(--m);padding:8px 4px;border-radius:10px;font-weight:600}
+.seg button.on{background:var(--a);color:#fff}
+/* rings */
+.ringwrap{position:relative;display:inline-block;flex:none}.ringwrap svg{display:block}
+.ringin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring-t{stroke:var(--b)}.ring-p{transition:stroke-dashoffset .5s ease}
+.big{font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1}
+.num{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15}
+.m{color:var(--m);font-size:13px}.err{color:var(--red);font-size:13px}.done{text-decoration:line-through;opacity:.55}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.ctr{text-align:center}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:color-mix(in srgb,var(--green) 18%,transparent);color:var(--green)}
+.chip.neg{background:color-mix(in srgb,var(--red) 18%,transparent);color:var(--red)}
+/* stat tiles + priority tiles */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.tile{background:var(--c);border:1px solid var(--b);border-radius:18px;padding:12px 8px;text-align:center}
+.tile .num{display:block}.tile .m{display:block}
+.ptiles{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:auto auto;gap:10px;margin:10px 0}
+.pt{border:0;border-radius:22px;padding:14px;text-align:left;color:var(--on-pastel);min-height:78px;display:flex;flex-direction:column;justify-content:flex-end;font-weight:600}
+.pt .num{color:var(--on-pastel)}.pt small{opacity:.75;font-weight:500}
+.pt.high{background:var(--lime);grid-row:span 2;min-height:166px;border-radius:26px 26px 26px 8px}.pt.medium{background:var(--cyan)}.pt.low{background:var(--lav)}
+/* task cards: priority colour is a stripe + badge (same lime / cyan / lavender mapping everywhere) */
+.task{--pc:var(--lav);position:relative;padding-left:20px}
+.task::before{content:"";position:absolute;left:8px;top:14px;bottom:14px;width:4px;border-radius:4px;background:var(--pc)}
+.task.high{--pc:var(--lime)}.task.medium{--pc:var(--cyan)}.task.low{--pc:var(--lav)}
+.badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--pc,var(--lav));color:var(--on-pastel)}
+.badge.high{--pc:var(--lime)}.badge.medium{--pc:var(--cyan)}.badge.low{--pc:var(--lav)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.bar{height:8px;background:var(--b);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--a),var(--a2));border-radius:9px}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);margin:10px 0}.stat3>div{padding:2px 8px;border-left:1px solid var(--b)}.stat3>div:first-child{border-left:0}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.chart{width:100%;height:auto;color:var(--m);font-size:9px}
+/* timer focus screen */
+.focus{text-align:center;padding:22px 16px}
+.focus .ringwrap{margin:6px auto 14px}
+.controls{display:flex;gap:10px;justify-content:center;margin-top:8px}.controls .btn{min-width:110px;padding:12px 18px}
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.cal button{position:relative;border:1px solid var(--b);background:var(--c);border-radius:14px;padding:10px 0}
+.cal button.sel{background:var(--lime);color:var(--on-pastel);border-color:transparent;font-weight:700}
+.cal button.has::after{content:"";position:absolute;bottom:4px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--a2)}
+.cal button.sel.has::after{background:var(--on-pastel)}
+/* nav + fab */
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:color-mix(in srgb,var(--c) 92%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--b);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;background:none;border:0;color:var(--m);padding:9px 2px 8px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+nav button svg{width:22px;height:22px}nav button.on{color:var(--a2);font-weight:700}
+nav button.on::before{content:"";position:absolute;top:0;width:22px;height:3px;border-radius:0 0 3px 3px;background:var(--a2)}
+#fab{position:fixed;right:18px;bottom:84px;width:58px;height:58px;border-radius:50%;border:0;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-size:30px;line-height:1;box-shadow:0 8px 22px #7c3aed66;z-index:6}
+dialog{border:1px solid var(--b);border-radius:26px;background:var(--c);color:var(--t);width:min(94vw,440px);padding:18px;max-height:92vh;overflow:auto}
+dialog::backdrop{background:#000a;backdrop-filter:blur(3px)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.row>select,.row>input:not([type=checkbox]){flex:1 1 130px;width:auto;min-width:0}
