@@ -68,3 +68,8 @@ test('pull builds a syncedAt cursor query and decodes documents; fetch returns n
  assert.equal(body.structuredQuery.where.fieldFilter.op,'GREATER_THAN_OR_EQUAL');assert.equal(body.structuredQuery.orderBy[0].field.fieldPath,'syncedAt');
  assert.equal(r.docs.length,1);assert.equal(r.docs[0].rec.title,'T');assert.equal(r.docs[0].deviceId,'devZ');assert.equal(r.docs[0].rec.syncedAt,undefined);assert.equal(r.docs[0].version,'2026-01-01T00:00:05Z');assert.equal(r.hasMore,false);
  assert.equal(await s.fetch('uid1','tasks','missing'),null)});
+
+test('account form reads the real field values at click time (autofill/IME safe), not only the input-event copy',()=>{
+ const src=require('fs').readFileSync(require('path').join(__dirname,'../js/account-ui.js'),'utf8');
+ assert.match(src,/const cur=\(\)=>\{email=em\.value;pass=pw\.value\}/);
+ for(const c of['signIn(email,pass)','signUp(email,pass)','resetPassword(email)'])assert.ok(src.includes('cur();await a.'+c),c+' must be preceded by cur()')});

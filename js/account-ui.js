@@ -50,11 +50,12 @@ function card(rerender){
   if(!as.configured){root.replaceChildren(...kids,h('div',{},h('span',{class:'pill'},x.localOnly)),h('p',{class:'m'},x.localOnlyHint));return}
   if(!as.user){
    const em=h('input',{type:'email',autocomplete:'email',placeholder:x.email,value:email,oninput:e=>{email=e.target.value}}),pw=h('input',{type:'password',autocomplete:'current-password',placeholder:x.pass,value:pass,oninput:e=>{pass=e.target.value}});
-   const dis=working||as.busy?{disabled:''}:{};
+   const cur=()=>{email=em.value;pass=pw.value}; // read the REAL field values at click time: autofill/IME can fill a field without an input event
+    const dis=working||as.busy?{disabled:''}:{};
    kids.push(em,pw,h('div',{},
-    h('button',{class:'btn',...dis,onclick:guarded(async()=>{await a.signIn(email,pass);pass='';msg=''})},x.signIn),
-    h('button',{class:'btn g',...dis,onclick:guarded(async()=>{await a.signUp(email,pass);pass='';msg=''})},x.signUp),
-    h('button',{class:'btn g',...dis,onclick:guarded(async()=>{await a.resetPassword(email);msg=x.resetSent;msgErr=false})},x.forgot)));
+    h('button',{class:'btn',...dis,onclick:guarded(async()=>{cur();await a.signIn(email,pass);pass='';msg=''})},x.signIn),
+    h('button',{class:'btn g',...dis,onclick:guarded(async()=>{cur();await a.signUp(email,pass);pass='';msg=''})},x.signUp),
+    h('button',{class:'btn g',...dis,onclick:guarded(async()=>{cur();await a.resetPassword(email);msg=x.resetSent;msgErr=false})},x.forgot)));
    if(as.notice==='session_expired')kids.push(h('p',{class:'err'},x.expired));
    if(working||as.busy)kids.push(h('p',{class:'m'},x.busy));
    if(msg)kids.push(h('p',{class:msgErr?'err':'m'},msg));root.replaceChildren(...kids);return}
