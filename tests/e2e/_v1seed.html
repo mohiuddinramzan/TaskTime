@@ -1,0 +1,14 @@
+<!doctype html><meta charset=utf-8><script>
+// Recreates EXACTLY the Phase 1 database (version 1) with realistic data, as an upgrading user would have.
+const SCHEMA={tasks:['status','categoryId','dueAt','createdAt','deletedAt'],sessions:['taskId','startedAt'],categories:[],settings:[],syncQueue:['status'],appState:[]};
+const r=indexedDB.open('task_time_db',1);
+r.onupgradeneeded=()=>{const d=r.result;for(const s in SCHEMA){const o=d.createObjectStore(s,{keyPath:'id'});SCHEMA[s].forEach(i=>o.createIndex(i,i))}};
+r.onsuccess=()=>{const d=r.result,t=d.transaction(Object.keys(SCHEMA),'readwrite');
+ t.objectStore('tasks').put({id:'p1-task',title:'Phase1 task',description:'',categoryId:'cat-work',priority:'high',status:'pending',estimatedMinutes:30,dueAt:null,recurrence:'none',createdAt:1700000000000,updatedAt:1700000000000,deletedAt:null,syncStatus:'pending'});
+ t.objectStore('sessions').put({id:'p1-ses',taskId:'p1-task',startedAt:1700000100000,endedAt:1700000160000,durationMs:60000,accumulatedMs:60000,notes:'old',createdAt:1700000160000,deletedAt:null,syncStatus:'pending'});
+ t.objectStore('settings').put({id:'prefs',theme:'dark',lang:'en',dailyGoalMin:123,remindersEnabled:false});
+ t.objectStore('categories').put({id:'cat-work',name:{bn:'কাজ',en:'Work'},createdAt:0,deletedAt:null});
+ t.objectStore('syncQueue').put({id:'legacy-random-id',entityType:'tasks',entityId:'p1-task',operation:'create',createdAt:1,retryCount:0,status:'pending'});
+ t.objectStore('appState').put({id:'timer',sessionId:'run1',taskId:'p1-task',status:'running',startedAt:Date.now()-120000,accumulatedMs:0,notes:'',origStartedAt:Date.now()-120000});
+ t.oncomplete=()=>{d.close();document.title='seeded'}};
+</script>

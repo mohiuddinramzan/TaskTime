@@ -18,3 +18,4 @@ input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--b);
 .m{color:var(--m);font-size:13px}.err{color:#d64550;font-size:13px}.done{text-decoration:line-through;opacity:.6}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}.cal button{border:1px solid var(--b);background:var(--c);border-radius:10px;padding:8px 0}.cal .sel{background:var(--a);color:#fff}
 dialog{border:1px solid var(--b);border-radius:var(--r);background:var(--c);color:var(--t);width:min(92vw,420px)}svg{width:100%;height:auto}
+.pills{display:flex;gap:6px;align-items:center}input:disabled,button:disabled{opacity:.5}

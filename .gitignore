@@ -1,3 +1,19 @@
 node_modules/
 *.log
 .DS_Store
+# Android / Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.iml
+.idea/
+# Never commit signing material
+*.jks
+*.keystore
+keystore.properties
+# Firebase CLI / admin credentials must never be committed
+*-adminsdk-*.json
+serviceAccount*.json
+.firebase/
+firebase-debug.log

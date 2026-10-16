@@ -8,7 +8,7 @@ const T={elapsed,
  begin(taskId,id,now=Date.now()){return{id:'timer',sessionId:id,taskId,status:'running',startedAt:now,accumulatedMs:0,notes:'',origStartedAt:now}},
  pause(s,now=Date.now()){return s.status!=='running'?s:{...s,status:'paused',accumulatedMs:elapsed(s,now),startedAt:null}},
  resume(s,now=Date.now()){return s.status!=='paused'?s:{...s,status:'running',startedAt:now}},
- toSession(s,now=Date.now()){const d=Math.round(elapsed(s,now));return{id:s.sessionId,taskId:s.taskId,startedAt:s.origStartedAt,endedAt:now,durationMs:d,accumulatedMs:d,notes:s.notes||'',createdAt:now,deletedAt:null,syncStatus:'pending'}}};
+ toSession(s,now=Date.now()){const d=Math.round(elapsed(s,now));return{id:s.sessionId,taskId:s.taskId,startedAt:s.origStartedAt,endedAt:now,durationMs:d,accumulatedMs:d,notes:s.notes||'',createdAt:now,updatedAt:now,deletedAt:null,syncStatus:'pending'}}};
 if(typeof window!=='undefined'){const {DB}=g.TT;Object.assign(T,{
  get:()=>DB.get('appState','timer'),
  async start(taskId){if(await T.get())throw new Error('timer_active');const s=T.begin(taskId,DB.uid());await DB.put('appState',s);return s},
@@ -17,8 +17,8 @@ if(typeof window!=='undefined'){const {DB}=g.TT;Object.assign(T,{
  async finish(notes){const s=await T.get();if(!s)return null;const ses=T.toSession({...s,notes:notes??s.notes});
   const d=await DB.open();await new Promise((res,rej)=>{const t=d.transaction(['sessions','appState','syncQueue'],'readwrite');
    t.objectStore('sessions').put(ses);t.objectStore('appState').delete('timer');
-   t.objectStore('syncQueue').put({id:DB.uid(),entityType:'sessions',entityId:ses.id,operation:'create',createdAt:Date.now(),retryCount:0,status:'pending'});
-   t.oncomplete=res;t.onerror=t.onabort=()=>rej(t.error)});return ses},
+   t.objectStore('syncQueue').put({id:'sessions:'+ses.id,entityType:'sessions',entityId:ses.id,operation:'create',createdAt:Date.now(),retryCount:0,nextAttemptAt:0,status:'pending',lastError:null});
+   t.oncomplete=res;t.onerror=t.onabort=()=>rej(t.error)});try{window.dispatchEvent(new Event('tt:localchange'))}catch(e){}return ses},
  cancel:()=>DB.del('appState','timer')})}
 g.TT=g.TT||{};g.TT.timer=T;if(typeof module!=='undefined')module.exports=T;
 })(typeof window!=='undefined'?window:globalThis);

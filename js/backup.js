@@ -12,6 +12,8 @@ const api={validate,STORES,
   return U.csv([['type','id','title','status','priority','estimatedMinutes','dueAt','startedAt','endedAt','durationMs','notes']].concat(
    t.filter(x=>!x.deletedAt).map(x=>['task',x.id,x.title,x.status,x.priority,x.estimatedMinutes??'',x.dueAt?new Date(x.dueAt).toISOString():'','','','','']),
    s.filter(x=>!x.deletedAt).map(x=>['session',x.id,tm[x.taskId]||'','','','','',new Date(x.startedAt).toISOString(),new Date(x.endedAt).toISOString(),x.durationMs,x.notes])))},
- download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1e3)}};
+ download(name,text,type){ // Android WebView cannot save blob: downloads; use the single narrow native bridge when present
+  if(g.TTNative&&typeof g.TTNative.postMessage==='function'){g.TTNative.postMessage(JSON.stringify({type:'saveFile',name,mime:type,content:text}));return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1e3)}};
 g.TT=g.TT||{};g.TT.backup=api;
 })(window);

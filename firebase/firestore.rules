@@ -1,0 +1,97 @@
+rules_version = '2';
+// Task Time — each signed-in user can access ONLY users/{their own uid}/**. Everything else is denied.
+// Hard deletes are denied: the app syncs soft-delete tombstones (deletedAt) so deletions propagate to every device.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function isInt(v) { return v is int; }
+    function optInt(d, k) { return !(k in d) || d[k] == null || d[k] is int; }
+    function optStr(d, k, max) { return !(k in d) || d[k] == null || (d[k] is string && d[k].size() <= max); }
+
+    // Fields every synced document must carry. syncedAt is set by the server (REQUEST_TIME transform).
+    function common(d, docId) {
+      return d.id == docId
+        && d.schemaVersion is int && d.schemaVersion >= 1 && d.schemaVersion <= 100
+        && d.updatedAt is int
+        && d.deviceId is string && d.deviceId.size() <= 64
+        && d.syncedAt == request.time
+        && optInt(d, 'createdAt') && optInt(d, 'deletedAt');
+    }
+    // An update may never move updatedAt backwards (older writes cannot overwrite newer ones).
+    function notOlder() { return request.resource.data.updatedAt >= resource.data.updatedAt; }
+
+    function validTask(d, docId) {
+      return common(d, docId)
+        && d.keys().hasOnly(['id','title','description','categoryId','priority','status','estimatedMinutes','dueAt','recurrence','createdAt','updatedAt','deletedAt','schemaVersion','deviceId','syncedAt'])
+        && d.title is string && d.title.size() <= 200
+        && optStr(d, 'description', 5000) && optStr(d, 'categoryId', 128)
+        && d.priority in ['low','medium','high']
+        && d.status in ['pending','in_progress','completed']
+        && (!('recurrence' in d) || d.recurrence in ['none','daily','weekly'])
+        && (!('estimatedMinutes' in d) || d.estimatedMinutes == null || (d.estimatedMinutes is int && d.estimatedMinutes >= 0 && d.estimatedMinutes <= 10080))
+        && optInt(d, 'dueAt');
+    }
+    function validSession(d, docId) {
+      return common(d, docId)
+        && d.keys().hasOnly(['id','taskId','startedAt','endedAt','durationMs','accumulatedMs','notes','createdAt','updatedAt','deletedAt','schemaVersion','deviceId','syncedAt'])
+        && d.taskId is string && d.taskId.size() <= 128
+        && d.startedAt is int && optInt(d, 'endedAt')
+        && d.durationMs is int && d.durationMs >= 0
+        && optInt(d, 'accumulatedMs') && optStr(d, 'notes', 5000);
+    }
+    function validCategory(d, docId) {
+      return common(d, docId)
+        && d.keys().hasOnly(['id','name','createdAt','updatedAt','deletedAt','schemaVersion','deviceId','syncedAt'])
+        && d.name is map;
+    }
+    function validSetting(d, docId) {
+      return common(d, docId)
+        && d.keys().hasOnly(['id','theme','lang','dailyGoalMin','remindersEnabled','createdAt','updatedAt','deletedAt','schemaVersion','deviceId','syncedAt'])
+        && (!('theme' in d) || d.theme in ['system','dark','light'])
+        && (!('lang' in d) || d.lang in ['bn','en'])
+        && (!('dailyGoalMin' in d) || (d.dailyGoalMin is int && d.dailyGoalMin >= 1 && d.dailyGoalMin <= 1440))
+        && (!('remindersEnabled' in d) || d.remindersEnabled is bool);
+    }
+    function validProfile(d) {
+      return d.id == 'main'
+        && d.keys().hasOnly(['id','email','createdAt','updatedAt','schemaVersion','deviceId','syncedAt'])
+        && optStr(d, 'email', 320) && d.updatedAt is int && d.schemaVersion is int
+        && d.deviceId is string && d.deviceId.size() <= 64 && d.syncedAt == request.time;
+    }
+
+    match /users/{uid} {
+      match /profile/{docId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && docId == 'main' && validProfile(request.resource.data);
+        allow update: if isOwner(uid) && docId == 'main' && validProfile(request.resource.data) && notOlder();
+        allow delete: if false;
+      }
+      match /tasks/{docId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validTask(request.resource.data, docId);
+        allow update: if isOwner(uid) && validTask(request.resource.data, docId) && notOlder();
+        allow delete: if false;
+      }
+      match /sessions/{docId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validSession(request.resource.data, docId);
+        allow update: if isOwner(uid) && validSession(request.resource.data, docId) && notOlder();
+        allow delete: if false;
+      }
+      match /categories/{docId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validCategory(request.resource.data, docId);
+        allow update: if isOwner(uid) && validCategory(request.resource.data, docId) && notOlder();
+        allow delete: if false;
+      }
+      match /settings/{docId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validSetting(request.resource.data, docId);
+        allow update: if isOwner(uid) && validSetting(request.resource.data, docId) && notOlder();
+        allow delete: if false;
+      }
+    }
+    // Default: everything else is denied (no rule => no access).
+  }
+}
